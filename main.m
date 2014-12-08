@@ -1,3 +1,8 @@
+% Calculates orbit of satellite
+% Determines doppler shift and slant between satellite and ground station
+% Writes link budget
+% Plots 2D and 3D graphs of orbit
+
 clear
 
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -9,11 +14,7 @@ v = 7500*[sind(45) cosd(45) 0]; % in m/s
 DELTA_time = 60; % in s
 simulation_time = 3600*24; % in s
 
-[Xeci Yeci Zeci period] = orbitECI(r, v, DELTA_time, simulation_time);
-
-[lat long h] = recttosph(Xeci, Yeci, Zeci);
-[lat long h] = ECItoECEF(lat, long, h, DELTA_time);
-[x y z] = sphtorect(lat, long, h);
+[x y z lat long h period] = orbitECI(r, v, DELTA_time, simulation_time);
 
 %%%%%%%%%%%%%%%%%%
 % GROUND STATION %
