@@ -1,30 +1,14 @@
-% ORBIT ANALYZER
-% Violet Attitude Control Subsystem
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Converts the State Vectors -
-% 1. Position Vector [Rx Ry Rz]
-% 2. Velocity Vector [Vx Vy Vz]
-%  into Kepler's Orbital Elements -
-% 1. Length of Semi-major Axis (a)
-% 2. Eccentricity (e)
-% 3. Inclination (inc)
-% 4. Right Ascension of Ascending Node (RAAN)
-% 5. Argument of Perigee (w)
-% 6. Initial Mean Anomaly (M0)
-%  after which it visually displays the orbit of the diagram in 3D space.
-%  The Blue Sphere denotes the Earth
-%  The Green Sphere denotes the initial position of the satellite
-%  The Red Spheres denote the positions of the satellites at fixed time
-%  intervals
-%  The dotted green line denotes the initial velocity vector of the
-%  satellite
-%  The three orthogonal black lines denote the 3 positive ECI axes
-%  
-%  At the end, the altitude ranges are displayed, as well as the orbit type
-%  - LEO or MEO
-%  The simulation only takes into account the the influence of the Earth
-% CODED BY DEBARGHYA DAS
-% MODIFIED BY GEOFFREY CARD
+% INPUT:
+%     r is position vector in m
+%     v is velocity in m/s
+%     DELTA_time is the time step in s
+%     simulation_time is total time of the simulation in s
+% OUTPUT:
+%     [x y z] is ECI position in m
+%     [lat long h] is ECI latitude, longitude, and orbital radius in ° and m
+%     period is orbital period in s
+% 
+% BASED ON CODE BY DEBARGHYA DAS
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % CUSTOMIZABLE STATE VECTORS %
@@ -57,7 +41,7 @@
 %vmag=7500;
 %runspeed=100;
 
-function [Xcoord Ycoord Zcoord period] = orbitECI(r, v, DELTA_time, simulation_time)
+function [x y z lat long h period] = orbitECI(r, v, DELTA_time, simulation_time)
 	% INITIAL POSITION VECTOR (in m)
 	%r=[7000e3 0 0];
 	% INITIAL VELOCITY VECTOR
@@ -69,9 +53,9 @@ function [Xcoord Ycoord Zcoord period] = orbitECI(r, v, DELTA_time, simulation_t
 	steps = ceil(simulation_time/DELTA_time);
 	
 	% Earth-Centered Interial (ECI) coordinates
-	Xcoord = NaN*ones(steps,1);
-	Ycoord = NaN*ones(size(Xcoord));
-	Zcoord = NaN*ones(size(Xcoord));
+	x = NaN*ones(steps,1);
+	y = NaN*ones(size(Xcoord));
+	z = NaN*ones(size(Xcoord));
 
 	% Constant parameters
 	mu = 398.6004418e12;  % Planetary gravitational constant for Earth, (mu = GMearth) (m^3/s^2)
@@ -234,16 +218,18 @@ function [Xcoord Ycoord Zcoord period] = orbitECI(r, v, DELTA_time, simulation_t
 		r = a*(1-e*cos(E));
 		% Computes the Cartesian Co-ordinates in ECI frame from 'r' and orbital
 		% elements
-		Xcoord(k) = r*(cos(w+v)*cos(RAAN) - sin(w+v)*sin(RAAN)*cos(inc));
-		Ycoord(k) = r*(cos(w+v)*sin(RAAN) + sin(w+v)*cos(RAAN)*cos(inc));
-		Zcoord(k) = r*(sin(w+v)*sin(inc));
+		x(k) = r*(cos(w+v)*cos(RAAN) - sin(w+v)*sin(RAAN)*cos(inc));
+		y(k) = r*(cos(w+v)*sin(RAAN) + sin(w+v)*cos(RAAN)*cos(inc));
+		z(k) = r*(sin(w+v)*sin(inc));
 
 		% Blast condition
-		if (sqrt (Xcoord(k)*Xcoord(k)+Ycoord(k)*Ycoord(k)+Zcoord(k)*Zcoord(k)) <= earth_rad)
+		if (sqrt (x(k)*x(k)+y(k)*y(k)+z(k)*z(k)) <= earth_rad)
 			ErrorMsg='Crashed'
 			break
 		end
 
 		M0=M0+sqrt(mu/(a*a*a))*DELTA_time; % Updating Mean Anomaly for next iteration
 	end
+
+	[lat long h] = recttosph(x, y, z);
 end
