@@ -1,3 +1,11 @@
+% INPUT:
+%     [x y z] is Earth Centered Earth Fixed position in m
+%     [latgnd longgnd hgnd] is latitude, longitude, and height of ground station in ° and m
+%     DELTA_time is the time step in s
+% OUTPUT:
+%     [az el] is azimuth and elevation in °
+%     doppler is v/c of satellite relative to ground station
+
 function [az el doppler] = gndstation(x, y, z, latgnd, longgnd, hgnd, DELTA_time)
 	c = 3e8; % in m/s
 
