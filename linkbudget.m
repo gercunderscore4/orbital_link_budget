@@ -1,3 +1,7 @@
+% RUNS IN MAIN
+% NOT A SEPARATE SCRIPT
+% Edit link budget in this script
+
 %{
 	The calculations below lack detail, but they're all either correct or best estimates.
 	I'll outline here what I do and don't know.
