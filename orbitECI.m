@@ -54,8 +54,8 @@ function [x y z lat long h period] = orbitECI(r, v, DELTA_time, simulation_time)
 	
 	% Earth-Centered Interial (ECI) coordinates
 	x = NaN*ones(steps,1);
-	y = NaN*ones(size(Xcoord));
-	z = NaN*ones(size(Xcoord));
+	y = NaN*ones(size(x));
+	z = NaN*ones(size(x));
 
 	% Constant parameters
 	mu = 398.6004418e12;  % Planetary gravitational constant for Earth, (mu = GMearth) (m^3/s^2)
